@@ -29,6 +29,28 @@ goUp z@(_, [])                  = z
 goUp (n, (LeftCrumb v r):rest)  = (Node v n r, rest)
 goUp (n, (RightCrumb v l):rest) = (Node v l n, rest)
 
+goRoot :: (Ord a) => ZTree a -> ZTree a
+goRoot z@(_, []) = z
+goRoot z = goRoot $ goUp z
+
+createLeft :: (Ord a) => ZTree a -> a -> ZTree a
+createLeft (Node v Empty r, crumbs) w = (Node v l' r, crumbs)
+    where l' = Node w Empty Empty
+createLeft z _ = z
+
+createRight :: (Ord a) => ZTree a -> a -> ZTree a
+createRight (Node v l Empty, crumbs) w = (Node v l r', crumbs)
+    where r' = Node w Empty Empty
+createRight z _ = z
+
+truncateLeft :: (Ord a) => ZTree a -> ZTree a
+truncateLeft z@(Node _ Empty _, _) = z
+truncateLeft (Node v _ r, crumbs) = (Node v Empty r, crumbs)
+
+truncateRight :: (Ord a) => ZTree a -> ZTree a
+truncateRight z@(Node _ _ Empty, _) = z
+truncateRight (Node v l _, crumbs) = (Node v l Empty, crumbs)
+
 starterZTree = (Node 1 (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) (Node 5 Empty Empty), [])
 
 -- starterZTree = (Empty, [])

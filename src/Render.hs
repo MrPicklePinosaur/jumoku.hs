@@ -6,8 +6,11 @@ import qualified ZTree
 
 type ResourceName = String
 
-newtype State = State
+data FocusedChild = LeftChild | RightChild deriving (Show)
+
+data State = State
     { ztree              :: ZTree.ZTree Integer
+    , focusedChild       :: FocusedChild
     } deriving (Show)
 
 jumokuApp :: App State e ResourceName
@@ -25,16 +28,30 @@ jumokuDraw s = [ vBox [ str val ] ]
 
 jumokuHandleEvent :: State -> BrickEvent n e -> EventM n (Next State)
 jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of
+    'h' -> continue s { focusedChild = LeftChild }
+    'l' -> continue s { focusedChild = RightChild }
     'k' -> continue s { ztree = ZTree.goUp $ ztree s }
-    'h' -> continue s { ztree = ZTree.goLeft $ ztree s }
-    'l' -> continue s { ztree = ZTree.goRight $ ztree s }
+    'j' -> continue s { ztree = moveFn $ ztree s }
+        where moveFn = case focusedChild s of
+                LeftChild  -> ZTree.goLeft
+                RightChild -> ZTree.goRight
+    'i' -> continue s { ztree = createFn (ztree s) 10 }
+        where createFn = case focusedChild s of
+                LeftChild  -> ZTree.createLeft
+                RightChild -> ZTree.createRight
+    'D' -> continue s { ztree = truncFn $ ztree s }
+        where truncFn = case focusedChild s of
+                LeftChild  -> ZTree.truncateLeft
+                RightChild -> ZTree.truncateRight
+    'g' -> continue s { ztree = ZTree.goRoot $ ztree s }
     'q' -> halt s
     _   -> continue s
 jumokuHandleEvent s _ = continue s
 
 jumokuInitialState :: IO State
 jumokuInitialState = pure State
-    { ztree = ZTree.starterZTree
+    { ztree        = ZTree.starterZTree
+    , focusedChild = LeftChild
     }
 
 runJumokuApp :: IO ()
