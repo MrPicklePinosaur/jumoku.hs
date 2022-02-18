@@ -2,12 +2,12 @@ module Render (runJumokuApp) where
 
 import Brick
 import Graphics.Vty
-import qualified BTree
+import qualified ZTree
 
 type ResourceName = String
 
 data State = State
-    { tree              :: BTree.BTree Integer
+    { tree              :: ZTree.ZTree Integer
     } deriving (Show)
 
 jumokuApp :: App State e ResourceName
@@ -29,7 +29,7 @@ jumokuHandleEvent s _ = continue s
 
 jumokuInitialState :: IO State
 jumokuInitialState = pure State
-    { tree = BTree.Empty
+    { tree = ZTree.starterZTree
     }
 
 runJumokuApp :: IO ()

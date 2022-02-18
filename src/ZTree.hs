@@ -2,15 +2,27 @@ module ZTree where
 
 -- zipper tree
 
-data ZTree a = Empty
-    | Node (ZTree a) a [ZTree a] deriving (Show)
+type ZTree a = (Tree a, [Crumb a])
 
-parent :: (Ord a) => ZTree a -> ZTree a
-parent Empty = Empty
-parent (Node p _ _) = p
+data Tree a = Empty
+    | Node a (Tree a) (Tree a) deriving (Show)
 
-insert :: (Ord a) => ZTree a -> a -> Int -> ZTree a
-insert Empty w i = Node Empty w []
-insert n@(Node p v c) w i = Node p v (take i c ++ newNode : drop i c)
-    where newNode = Node n w []
-    
+data Crumb a = LeftCrumb a (Tree a)
+    | RightCrumb a (Tree a) deriving (Show)
+
+-- TODO error handling when invalid move??
+
+goLeft :: (Ord a) => ZTree a -> ZTree a
+goLeft z@(Node _ Empty _, crumbs) = z
+goLeft (Node v l r, crumbs)       = (l, LeftCrumb v r : crumbs)
+
+goRight :: (Ord a) => ZTree a -> ZTree a
+goRight z@(Node _ _ Empty, crumbs) = z
+goRight (Node v l r, crumbs)       = (r, RightCrumb v l : crumbs)
+
+goUp :: (Ord a) => ZTree a -> ZTree a
+goUp z@(_, [])                  = z
+goUp (n, (LeftCrumb v r):rest)  = (Node v n r, rest)
+goUp (n, (RightCrumb v l):rest) = (Node v l n, rest)
+
+starterZTree = (Node 1 (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) (Node 5 Empty Empty), [])
