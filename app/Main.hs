@@ -1,6 +1,7 @@
 module Main where
 
 import qualified BTree
+import qualified Render
 
 main :: IO ()
-main = putStrLn "こんにちは世界"
+main = Render.runJumokuApp
