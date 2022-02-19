@@ -24,7 +24,7 @@ jumokuApp = App
 
 jumokuDraw :: State -> [Widget ResourceName]
 jumokuDraw s = [ vBox [ str val ] ]
-    where val = maybe "E" show $ ZTree.getValue $ ztree s
+    where val = ZTree.toString $ ZTree.goRoot $ ztree s
 
 jumokuHandleEvent :: State -> BrickEvent n e -> EventM n (Next State)
 jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of
@@ -35,7 +35,7 @@ jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of
         where moveFn = case focusedChild s of
                 LeftChild  -> ZTree.goLeft
                 RightChild -> ZTree.goRight
-    'i' -> continue s { ztree = createFn (ztree s) 10 }
+    'i' -> continue s { ztree = createFn (ztree s) 7 }
         where createFn = case focusedChild s of
                 LeftChild  -> ZTree.createLeft
                 RightChild -> ZTree.createRight

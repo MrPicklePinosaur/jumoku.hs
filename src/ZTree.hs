@@ -58,11 +58,23 @@ truncateRight :: (Ord a) => ZTree a -> ZTree a
 truncateRight z@(Node _ _ Empty, _) = z
 truncateRight (Node v l _, crumbs) = (Node v l Empty, crumbs)
 
--- offset and width
--- instance Show
+toString :: (Show a, Ord a) => ZTree a -> String
+toString (n, _) = foldl (\a b -> a ++ "\n" ++ b) "" (toString' n)
 
--- show' :: (Ord a) => ZTree a -> (Integer, Integer) -> String
--- show' (Node _ l r, _) (o, w) = 
+toString' :: (Show a, Ord a) => Tree a -> [String]
+toString' Empty        = [" "]
+toString' (Node v l r) = (pad ++ show v ) : mergeStringList leftStr rightStr
+    where
+        leftStr  = toString' l
+        rightStr = toString' r
+        pad      = replicate (length leftStr) ' '
+        
+
+mergeStringList :: [String] -> [String] -> [String]
+mergeStringList [] []         = []
+mergeStringList a []          = a
+mergeStringList [] b          = b
+mergeStringList (a:at) (b:bt) = (a ++ b) : mergeStringList at bt
 
 starterZTree = (Node 1 (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) (Node 5 Empty Empty), [])
 
