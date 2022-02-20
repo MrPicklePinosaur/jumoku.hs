@@ -14,6 +14,13 @@ getValue :: (Ord a) => ZTree a -> Maybe a
 getValue (Empty, _)      = Nothing
 getValue (Node v _ _, _) = Just v
 
+height :: (Ord a) => ZTree a -> Integer
+height (n, _) = height' n
+
+height' :: (Ord a) => Tree a -> Integer
+height' Empty        = 0
+height' (Node _ l r) = 1 + max (height' l) (height' r)
+
 -- TODO error handling when invalid move??
 
 goLeft :: (Ord a) => ZTree a -> ZTree a
@@ -50,6 +57,12 @@ truncateLeft (Node v _ r, crumbs) = (Node v Empty r, crumbs)
 truncateRight :: (Ord a) => ZTree a -> ZTree a
 truncateRight z@(Node _ _ Empty, _) = z
 truncateRight (Node v l _, crumbs) = (Node v l Empty, crumbs)
+
+-- offset and width
+-- instance Show
+
+-- show' :: (Ord a) => ZTree a -> (Integer, Integer) -> String
+-- show' (Node _ l r, _) (o, w) = 
 
 starterZTree = (Node 1 (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) (Node 5 Empty Empty), [])
 
