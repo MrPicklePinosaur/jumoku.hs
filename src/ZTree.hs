@@ -63,19 +63,32 @@ toString (n, _) = foldl (\a b -> a ++ "\n" ++ b) "" (toString' n)
 
 toString' :: (Show a, Ord a) => Tree a -> [String]
 toString' Empty        = [" "]
-toString' (Node v l r) = (pad ++ show v ) : mergeStringList leftStr rightStr
+toString' (Node v l r) = (pad ++ show v) : mergeStringList leftStr rightStr
     where
         leftStr  = toString' l
         rightStr = toString' r
         pad      = replicate (length leftStr) ' '
-        
 
 mergeStringList :: [String] -> [String] -> [String]
 mergeStringList [] []         = []
 mergeStringList a []          = a
-mergeStringList [] b          = b
+mergeStringList [] b          = mergeStringList padList b
+    where
+        padList   = replicate (length b) padString
+        padString = replicate (2 ^ (length b - 1)) ' '
 mergeStringList (a:at) (b:bt) = (a ++ b) : mergeStringList at bt
 
-starterZTree = (Node 1 (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) (Node 5 Empty Empty), [])
+toPoints :: (Ord a) => ZTree a -> [(Integer, Integer)]
+toPoints z@(n, _) = toPoints' n 0 (2 ^ height z - 1)
+
+toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> [(Integer, Integer)]
+toPoints' Empty _ _        = []
+toPoints' (Node v l r) o w = left ++ right
+    where
+        left  = toPoints' l o hw
+        right = toPoints' r (o + hw + 1) hw
+        hw    = w `div` 2
+
+starterZTree = (Node 1 (Node 5 Empty Empty) (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) , [])
 
 -- starterZTree = (Empty, [])
