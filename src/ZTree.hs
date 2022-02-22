@@ -79,16 +79,18 @@ mergeStringList [] b          = mergeStringList padList b
 mergeStringList (a:at) (b:bt) = (a ++ b) : mergeStringList at bt
 
 toPoints :: (Ord a) => ZTree a -> [(Integer, Integer)]
-toPoints z@(n, _) = toPoints' n 0 (2 ^ height z - 1)
+toPoints z@(n, _) = toPoints' n 0 (2 ^ height z - 1) 0
 
-toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> [(Integer, Integer)]
-toPoints' Empty _ _        = []
-toPoints' (Node v l r) o w = left ++ right
+-- offset, width, height
+-- TODO this should be a breath first traverse
+toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> Integer -> [(Integer, Integer)]
+toPoints' Empty _ _ _        = []
+toPoints' (Node v l r) o w h = [(o + hw, h)] ++ left ++ right
     where
-        left  = toPoints' l o hw
-        right = toPoints' r (o + hw + 1) hw
+        left  = toPoints' l o hw (succ h)
+        right = toPoints' r (o + hw + 1) hw (succ h)
         hw    = w `div` 2
 
-starterZTree = (Node 1 (Node 5 Empty Empty) (Node 2 (Node 3 Empty Empty) (Node 4 Empty Empty)) , [])
+starterZTree = (Node 1 (Node 2 (Node 4 Empty Empty) (Node 5 Empty Empty)) (Node 2 (Node 6 Empty Empty) (Node 7 Empty Empty)) , [])
 
 -- starterZTree = (Empty, [])

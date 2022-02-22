@@ -4,6 +4,8 @@ import Brick
 import Graphics.Vty
 import qualified ZTree
 
+import qualified Data.MultiMap as MultiMap
+
 type ResourceName = String
 
 data FocusedChild = LeftChild | RightChild deriving (Show)
@@ -23,8 +25,11 @@ jumokuApp = App
     }
 
 jumokuDraw :: State -> [Widget ResourceName]
-jumokuDraw s = [ vBox [ str val ] ]
-    where val = ZTree.toString $ ZTree.goRoot $ ztree s
+jumokuDraw s = [ vBox rows ]
+    where
+        rows   = [ str "" ] -- temp
+        layers = MultiMap.elems $ MultiMap.fromList points
+        points = ZTree.toPoints $ ZTree.goRoot $ ztree s
 
 jumokuHandleEvent :: State -> BrickEvent n e -> EventM n (Next State)
 jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of

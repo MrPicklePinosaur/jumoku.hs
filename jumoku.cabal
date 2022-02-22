@@ -31,14 +31,16 @@ executable jumoku
         BTree,
         ZTree,
         Render,
-        Cli
+        Cli,
+        Utils
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
     build-depends:
         base ^>= 4.15.1.0,
         brick,
-        vty
+        vty,
+        multimap
     hs-source-dirs:
         app,
         src
