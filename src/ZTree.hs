@@ -10,6 +10,12 @@ data Tree a = Empty
 data Crumb a = LeftCrumb a (Tree a)
     | RightCrumb a (Tree a) deriving (Show)
 
+data NodeInfo a = NodeInfo
+    { value         :: a
+    , xPos          :: Integer
+    , yPos          :: Integer
+    }
+
 getValue :: (Ord a) => ZTree a -> Maybe a
 getValue (Empty, _)      = Nothing
 getValue (Node v _ _, _) = Just v
@@ -78,19 +84,18 @@ mergeStringList [] b          = mergeStringList padList b
         padString = replicate (2 ^ (length b - 1)) ' '
 mergeStringList (a:at) (b:bt) = (a ++ b) : mergeStringList at bt
 
-toPoints :: (Ord a) => ZTree a -> [(Integer, Integer)]
+toPoints :: (Ord a) => ZTree a -> [(Integer, NodeInfo a)]
 toPoints z@(n, _) = toPoints' n 0 (2 ^ height z - 1) 0
 
 -- offset, width, height
--- TODO this should be a breath first traverse
--- pairs are in the form (y, x)
-toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> Integer -> [(Integer, Integer)]
+toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> Integer -> [(Integer, NodeInfo a)]
 toPoints' Empty _ _ _        = []
-toPoints' (Node v l r) o w h = [(h, o + hw)] ++ left ++ right
+toPoints' (Node v l r) o w h = [(h, nodeInfo)] ++ left ++ right
     where
-        left  = toPoints' l o hw (succ h)
-        right = toPoints' r (o + hw + 1) hw (succ h)
-        hw    = w `div` 2
+        nodeInfo = NodeInfo { value = v , xPos  = o + hw , yPos  = h }
+        left     = toPoints' l o hw (succ h)
+        right    = toPoints' r (o + hw + 1) hw (succ h)
+        hw       = w `div` 2
 
 starterZTree = (Node 1 (Node 2 (Node 4 Empty Empty) (Node 5 Empty Empty)) (Node 2 (Node 6 Empty Empty) (Node 7 Empty Empty)) , [])
 

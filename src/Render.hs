@@ -30,16 +30,16 @@ jumokuDraw s = [ vBox [ str $ drawLayer l | l <- layers ]]
         layers = MultiMap.elems $ MultiMap.fromList points
         points = ZTree.toPoints $ ZTree.goRoot $ ztree s
 
-drawLayer :: [Integer] -> String
+drawLayer :: [ZTree.NodeInfo Integer] -> String
 drawLayer p = drawLayer' p 0
 -- drawLayer = foldr ((++) . show) ""
 
-drawLayer' :: [Integer] -> Integer -> String
-drawLayer' [] _     = ""
-drawLayer' p@(ph:pt) i = if i == ph then node else empty
+drawLayer' :: [ZTree.NodeInfo Integer] -> Integer -> String
+drawLayer' [] _        = ""
+drawLayer' p@(ph:pt) i = if i == ZTree.xPos ph then node else empty
     where
-        node = show ph ++ drawLayer' pt (succ i)
         empty = " " ++ drawLayer' p (succ i)
+        node  = show (ZTree.value ph) ++ drawLayer' pt (succ i)
 
 jumokuHandleEvent :: State -> BrickEvent n e -> EventM n (Next State)
 jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of
