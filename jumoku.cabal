@@ -31,8 +31,7 @@ executable jumoku
         BTree,
         ZTree,
         Render,
-        Cli,
-        Utils
+        Cli
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:

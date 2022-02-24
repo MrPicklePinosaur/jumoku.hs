@@ -83,9 +83,10 @@ toPoints z@(n, _) = toPoints' n 0 (2 ^ height z - 1) 0
 
 -- offset, width, height
 -- TODO this should be a breath first traverse
+-- pairs are in the form (y, x)
 toPoints' :: (Ord a) => Tree a -> Integer -> Integer -> Integer -> [(Integer, Integer)]
 toPoints' Empty _ _ _        = []
-toPoints' (Node v l r) o w h = [(o + hw, h)] ++ left ++ right
+toPoints' (Node v l r) o w h = [(h, o + hw)] ++ left ++ right
     where
         left  = toPoints' l o hw (succ h)
         right = toPoints' r (o + hw + 1) hw (succ h)

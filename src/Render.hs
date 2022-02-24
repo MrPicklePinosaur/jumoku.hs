@@ -25,11 +25,21 @@ jumokuApp = App
     }
 
 jumokuDraw :: State -> [Widget ResourceName]
-jumokuDraw s = [ vBox rows ]
+jumokuDraw s = [ vBox [ str $ drawLayer l | l <- layers ]]
     where
-        rows   = [ str "" ] -- temp
         layers = MultiMap.elems $ MultiMap.fromList points
         points = ZTree.toPoints $ ZTree.goRoot $ ztree s
+
+drawLayer :: [Integer] -> String
+drawLayer p = drawLayer' p 0
+-- drawLayer = foldr ((++) . show) ""
+
+drawLayer' :: [Integer] -> Integer -> String
+drawLayer' [] _     = ""
+drawLayer' p@(ph:pt) i = if i == ph then node else empty
+    where
+        node = show ph ++ drawLayer' pt (succ i)
+        empty = " " ++ drawLayer' p (succ i)
 
 jumokuHandleEvent :: State -> BrickEvent n e -> EventM n (Next State)
 jumokuHandleEvent s (VtyEvent (EvKey (KChar c) [])) = case c of
